@@ -3,10 +3,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function main()
-    close all, clear all, clc;
+    clear, clc, close all;
     
     mainfolder = pwd();
-    path = strcat(mainfolder, '\dataBase\orl_faces');
+    path = strcat(mainfolder, '\dataBase\orl_facesPDI');
     classname = '\s';
     wn = false; % change so to run in windows %
     ngroups = 40;

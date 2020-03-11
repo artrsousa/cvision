@@ -1,25 +1,28 @@
 clear; clc; close all;
 
-path = 'D:\subjects\pdi\pcarps';
+originalpath = pwd();
+pathdestiny = strcat(originalpath, '\dataBase\orl_facesPDI');
+path = strcat(originalpath, '\dataBase\orl_faces');
+classname = '\s';
 
-classnumber = 3;
-imagetoload = 700;
+classnumber = 40;
+imagetoload = 10;
 
 cd(path);
 
-for i = 1 : 3
-    foldername = strcat(path, '\rockpaperscissors\o', int2str(i));
+for i = 1 : classnumber
+    foldername = strcat(path,classname,int2str(i));
+    foldernamedestiny = strcat(pathdestiny,classname,int2str(i));
     for k = 1 : imagetoload
-        filename = strcat(foldername, '\i', int2str(k), '.png');
+        filename = strcat(foldername, '\', int2str(k), '.pgm');
+        filedestiny = strcat(foldernamedestiny, '\', int2str(k), '.pgm');
         
         tmp = imread(filename);
-        
-        if(ndims(tmp) == 3)
-            tmp = rgb2gray(imread(filename));
-        end
-        
-        imwrite(tmp, filename);
+        tmp = imnoise(tmp, 'gaussian');
+       
+        imwrite(tmp, filedestiny);
     end
 end
 
+chdir(originalpath);
 clear all; close all;
