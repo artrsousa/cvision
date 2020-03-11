@@ -1,0 +1,19 @@
+function z = lerImgs(train, path, ngroups, windows)
+    z = [];
+    pwd()
+    for j = 1:ngroups
+        filename = strcat(path, '\database\orl_faces\', int2str(j));
+        
+        if windows
+            filename = strrep(filename, '\', '/')
+        end
+        
+        cd(filename);
+        for k = 1 : train
+            x = imread(strcat(filename, '\i', int2str(k),'.png'));
+            y = reshape(x,[size(x,1)*size(x,2),1]);
+            z = [z , y];
+        end
+    end
+    return;
+end
