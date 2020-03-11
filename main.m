@@ -1,25 +1,32 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%% main %%%%%%%%%%%%%%%%
 %%ARTHUR RICARDO - PDI2019 %%
-%%        MAIN             %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function main()
     close all, clear all, clc;
-
-    path = pwd();
+    
+    mainfolder = pwd();
+    path = strcat(mainfolder, '\dataBase\orl_faces');
+    classname = '\s';
+    wn = false; % change so to run in windows %
     ngroups = 40;
     nimages = 10;
-    windows = false; % change folder name to run in windows %
-
-    classf(path, nimages, ngroups, windows);
-
-    function PC = classf(path, nimages, ngroups, windows)
-        train = [50, 60, 70];
+    
+    classf(path, classname, nimages, ngroups, wn);
+    
+    chdir(mainfolder);
+    
+    function PC = classf(path, classname, nimages, ngroups, wn)
+        train = [50, 60 ,70];
         for t = 1 : size(train, 2)
-            tmptrainned = round(nimages * train(t) / 100)
+            tmptrainned = round(nimages * train(t) / 100);
 
-            data = lerImgs(tmptrainned, path, ngroups, windows);
-
+            data = lerImgs(tmptrainned, strcat(path, classname), ngroups, wn);
+            
+            if ~wn
+                path = strrep(path, '\', '/');
+            end
+            
             cd(path);
 
             disp(strcat('NUMBER OF IMAGES IN DATABASE: ', int2str(nimages)));
@@ -29,29 +36,38 @@ function main()
             [P PC mn] = GerarPCs(data);
 
             disp('TESTING...');
+            
             hit = 0;
-            for i = 1 : ngroups
-               folder = strcat(path, '\TOCHANGE\TOCHANGE', int2str(i));
+            for i = 1:ngroups
+               folder = strcat(path, classname, int2str(i));
                hitsperclass = 0;
                for j = tmptrainned + 1 : nimages
-                    filename = strcat(folder, '\i', int2str(j), '.png'); 
+                    filename = strcat(folder,'\',int2str(j),'.pgm'); 
+               
+                    if ~wn
+                        filename = strrep(filename,'\','/');
+                    end
+                    
                     tmp = imread(filename);
-
-                    d = Classificar(PC, ProjetarAmostra(tmp, mn, P));
-
-                    if (ceil(d / tmptrainned) == i)
+                    d = Classificar(PC,ProjetarAmostra(tmp,mn,P));
+                    
+                    if (ceil(d/tmptrainned) == i)
                         hit = hit + 1;
                         hitsperclass = hitsperclass + 1;
-                    %else
-                    %    figure(1);
-                    %    imshowpair(reshape(data(:, d), 200, 300), tmp, 'montage');
+                    else
+                        %figure(1);
+                        %imshowpair(reshape(data(:, d), size(tmp, 1), size(tmp, 2)), tmp, 'montage');
                     end
 
                end
-               disp(strcat('Hits per class: ', i, ': hitsperclass: ', int2str(hitsperclass), ' .total:', int2str(nimages - (tmptrainned + 1))));
+               
+               disp(strcat('Hits per class - ',int2str(i),...
+                   ': hitsperclass: ',int2str(hitsperclass),...
+                   ' - ',num2str(100*hitsperclass/(nimages-tmptrainned)), '%. ',...
+                   ' .total:',int2str(nimages - tmptrainned)));
             end
 
-            hitpercent = hit / (ngroups * (nimages - tmptrainned - 1));
+            hitpercent = hit / (ngroups * (nimages - tmptrainned));
             misspercent = 1 - hitpercent;
 
             totalt = num2str(ngroups * (nimages - tmptrainned));
@@ -65,6 +81,5 @@ function main()
 
         end
 
-        return;
     end
 end

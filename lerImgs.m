@@ -1,9 +1,9 @@
-function z = lerImgs(train, path, ngroups, windows)
+function z = lerImgs(train, path, ngroups, wn)
     z = [];
     for j = 1:ngroups
-        filename = strcat(path, '\dataBase\orl_faces\s', int2str(j));
+        filename = strcat(path, int2str(j));
         
-        if ~windows
+        if ~wn
             filename = strrep(filename, '\', '/');
         end
         
@@ -12,7 +12,7 @@ function z = lerImgs(train, path, ngroups, windows)
         for k = 1 : train
             imagename = strcat(filename, '\', int2str(k),'.pgm'); 
            
-            if ~windows
+            if ~wn
                 imagename = strrep(imagename, '\', '/');
             end
             
